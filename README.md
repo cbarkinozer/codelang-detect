@@ -1,10 +1,11 @@
 # codelang-detect
-A fast, lightweight, regex-based programming language detector for Python.
+
+🚀 A fast, lightweight, regex-based programming language detector for Python.
 
 [![PyPI version](https://img.shields.io/pypi/v/codelang-detect.svg)](https://pypi.org/project/codelang-detect/)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/YOUR_USERNAME/codelang-detect/ci.yml?branch=main)](https://github.com/YOUR_USERNAME/codelang-detect/actions)
 [![Python Versions](https://img.shields.io/pypi/pyversions/codelang-detect.svg)](https://pypi.org/project/codelang-detect/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ---
 
@@ -13,7 +14,7 @@ Codelang-detect identifies the programming language of a given code snippet. It 
 ### Key Features
 
 -   ⚡️ **Blazing Fast:** Built on a system of weighted, compiled regular expressions. Performance is measured in microseconds.
--   🎯 **Highly Accurate:** Uses a curated set of heuristics and idiomatic patterns to distinguish between languages with similar syntax and as you can see from the benchmark it is better than other libraries.
+-   🎯 **Highly Accurate:** Demonstrably more accurate than popular alternatives on a curated suite of real-world and tricky code snippets.
 -   📦 **Zero Dependencies:** Pure Python. `pip install codelang-detect` is all you need. No heavyweight models, no external binaries.
 -   🔧 **Simple API:** A single function call: `detect(code)`.
 -   💻 **CLI Included:** Use it directly from your terminal or in shell scripts.
@@ -22,26 +23,54 @@ Codelang-detect identifies the programming language of a given code snippet. It 
 
 Many existing language detectors have significant trade-offs:
 
--   **Heavy ML Models (e.g., `guesslang`):** Require large dependencies like TensorFlow, making them hundreds of megabytes in size and slower for single, on-the-fly detections.
--   **Comprehensive Tools (e.g., `pygments`):** Excellent for syntax highlighting, but its primary goal isn't detection. Its guessing can be less accurate on short or ambiguous snippets.
+-   **Heavy ML Models (e.g., `guesslang`):** Often have complex or outdated dependencies (like older TensorFlow versions) that make installation difficult. They are also significantly slower for single detections.
+-   **Comprehensive Tools (e.g., `pygments`):** Excellent for syntax highlighting, but its primary goal isn't detection. As the benchmarks show, its guessing can be unreliable.
 -   **Platform-Specific Tools (e.g., GitHub's `linguist`):** The industry standard, but it's a Ruby Gem, making it difficult to integrate into a Python environment.
 
-`codelang-detect` fills the gap for a "just right" solution: a lightweight, portable, and fast detector that excels at identifying code snippets accurately.
+`codelang-detect` fills the gap for a "just right" solution: a lightweight, portable, and fast detector that delivers best-in-class accuracy.
 
 ### Benchmark: Accuracy & Performance
 
-Here's how `codelang-detect` stacks up against other popular Python libraries on a [curated set of tricky code snippets](https://github.com/YOUR_USERNAME/codelang-detect/blob/main/tests/test_cases.json).
+The results speak for themselves. On a [curated set of 16 code snippets](https://github.com/YOUR_USERNAME/codelang-detect/blob/main/benchmark.py) designed to test real-world accuracy, `codelang-detect` is both significantly more accurate and orders of magnitude faster than other popular libraries.
 
-| Library                 | Accuracy | Avg. Time / Sample (ms) | Dependencies     |
-| ----------------------- | :------: | :---------------------: | ---------------- |
-| **`codelang-detect` (Ours)** | **92%**  |     **~0.015 ms**     | **None**         |
-| `pygments`              |   83%    |       ~0.150 ms       | None             |
-| `whatthelang`           |   58%    |       ~0.045 ms       | None             |
-| `guesslang`             |   92%    |      ~25.831 ms       | `tensorflow`     |
+| Library                    | Accuracy  | Avg. Time / Sample (µs) | Dependencies     |
+| -------------------------- | :-------: | :---------------------: | ---------------- |
+| **`codelang-detect` (Ours)** | **100%**  |       **~65 µs**      | **None**         |
+| `Pygments`                 |  12.5%    |       ~1460 µs        | None             |
+| `WhatsThatCode`            |  18.8%    |       ~1804 µs        | None             |
 
-*Benchmarks run on a standard consumer laptop. Your results may vary.*
+*Benchmarks run on Python 3.13. Your results may vary.*
 
-As you can see, `codelang-detect` achieves accuracy comparable to heavyweight ML models while being over **1,500x faster** and having **zero dependencies**.
+As the results show, `codelang-detect` is not only the most accurate solution in this test suite but also **~22x faster than `Pygments`** and **~27x faster than `WhatsThatCode`**, all while maintaining zero dependencies.
+
+<details>
+<summary>Click to see detailed accuracy breakdown</summary>
+
+```
+--- Accuracy Benchmark ---
+| Test Case          | Expected   | Codelang-Detect (Ours) | Pygments               | WhatsThatCode          |
+--------------------------------------------------------------------------------------------------------------
+| cs_simple          | cs         | cs                  ✅ | text                ❌ | java                ❌ |
+| cs_lambda          | cs         | cs                  ✅ | scdoc               ❌ | unknown             ❌ |
+| cs_full            | cs         | cs                  ✅ | gdscript            ❌ | java                ❌ |
+| py_simple          | py         | py                  ✅ | py                  ✅ | unknown             ❌ |
+| py_class           | py         | py                  ✅ | perl6               ❌ | unknown             ❌ |
+| java_simple        | java       | java                ✅ | py                  ❌ | java                ✅ |
+| java_full          | java       | java                ✅ | teratermmacro       ❌ | unknown             ❌ |
+| js_arrow           | js         | js                  ✅ | gdscript            ❌ | unknown             ❌ |
+| yaml_k8s           | yaml       | yaml                ✅ | actionscript3       ❌ | unknown             ❌ |
+| sh_shebang         | sh         | sh                  ✅ | sh                  ✅ | sh                  ✅ |
+| kt_data_class      | kt         | kt                  ✅ | ssp                 ❌ | unknown             ❌ |
+| swift_func         | swift      | swift               ✅ | gdscript            ❌ | unknown             ❌ |
+| scala_case_class   | scala      | scala               ✅ | text                ❌ | cs                  ❌ |
+| sql_select         | sql        | sql                 ✅ | scdoc               ❌ | unknown             ❌ |
+| cbl_simple         | cbl        | cbl                 ✅ | componentpascal     ❌ | unknown             ❌ |
+| plain_text         | unknown    | unknown             ✅ | unknown             ✅ | unknown             ✅ |
+```
+
+</details>
+
+*Note: Libraries like `guesslang` and `enry` were excluded from the final benchmark due to significant installation issues with modern Python versions and their respective dependencies.*
 
 ### Installation
 
@@ -103,7 +132,7 @@ cat deployment.yaml | codelang-detect
 
 ### Supported Languages
 
-`codelang-detect` currently has high-quality detection for the following languages. We welcome contributions for more!
+`codelang-detect` currently provides high-quality detection for the following languages. We welcome contributions to support additional languages; however, please note that expanding the list may reduce overall detection accuracy. To ensure quality, please demonstrate that the language you propose is both popular and genuinely needed.
 
 -   C# (`cs`)
 -   COBOL (`cbl`)
@@ -141,4 +170,4 @@ Please see the `CONTRIBUTING.md` file for more details on setting up a developme
 
 ### License
 
-This project is licensed under the Apache 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
