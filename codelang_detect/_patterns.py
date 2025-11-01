@@ -1,0 +1,158 @@
+import re
+
+# This dictionary contains the final, tuned regex rules for language detection.
+PATTERNS = {
+    'c': [
+        (re.compile(r'#include\s*<[a-z]+\.h>'), 5),
+        (re.compile(r'\b(printf|scanf|malloc|free)\s*\('), 4),
+        (re.compile(r'^\s*#define\b'), 3),
+        (re.compile(r'->\w+'), 2),
+    ],
+    'cbl': [
+        (re.compile(r'^\s*(IDENTIFICATION|ENVIRONMENT|DATA|PROCEDURE)\s+DIVISION\s*\.', re.IGNORECASE), 5),
+        (re.compile(r'^\s*PROGRAM-ID\s*\.', re.IGNORECASE), 5),
+        (re.compile(r'\s(PIC|PICTURE)\s+', re.IGNORECASE), 3),
+    ],
+    'cpp': [
+        (re.compile(r'#include\s*<(iostream|vector|string|map|memory)>'), 5),
+        (re.compile(r'^\s*using\s+namespace\s+std;'), 4),
+        (re.compile(r'\bstd::\w+'), 4),
+        (re.compile(r'^\s*class\s+\w+\s*\{'), 3),
+        (re.compile(r'\b(public|private|protected):'), 3),
+        (re.compile(r'template\s*<.*>'), 3),
+    ],
+    'cs': [
+        # FIX for cs_async_method: Added async Task and using statement, which are uniquely C#.
+        (re.compile(r'\basync\s+Task<'), 5),
+        (re.compile(r'\busing\s*\('), 5),
+        # FIX for cs_lambda: Added Func/Action delegates.
+        (re.compile(r'\b(Func|Action)<\w+'), 5),
+        # FIX for cs_full: Added typeof() operator.
+        (re.compile(r'\btypeof\s*\('), 5),
+        # Existing high-confidence rules
+        (re.compile(r'\{\s*get;\s*set;\s*\}'), 5),
+        (re.compile(r'\b(from|where|select)\s+\w+\s+\b(in|select|group)\b'), 4),
+        (re.compile(r'^\s*\[\w+\]'), 4),
+        (re.compile(r'\busing\s+System'), 3),
+        (re.compile(r'\bnamespace\s+[\w\.]+'), 3),
+    ],
+    'dart': [
+        (re.compile(r'^\s*import\s+["\']package:'), 5),
+        (re.compile(r'\b(void|Future)\s+main\s*\(\)\s*(async)?'), 5),
+        (re.compile(r'\b(late|final|const)\s+\w+'), 4),
+        (re.compile(r'@(override|required)\b'), 3),
+        (re.compile(r'\w+\s*=>\s*\w+;'), 2),
+    ],
+    'go': [
+        (re.compile(r'^\s*package\s+\w+'), 5),
+        (re.compile(r'\bfunc\s+main\s*\(\)'), 5),
+        (re.compile(r'import\s+\('), 4),
+        (re.compile(r':='), 4),
+        (re.compile(r'\b(func|defer|go|chan)\b'), 3),
+        (re.compile(r'if\s+err\s*!=\s*nil'), 3),
+    ],
+    'java': [
+        # FIX for java_full: Added for-each loop syntax, a huge Java signal
+        (re.compile(r'for\s*\(\s*[\w\.<>\[\]]+\s+\w+\s*:\s*\w+'), 5),
+        (re.compile(r'import\s+java\.util\.(stream|List|Arrays|ArrayList);'), 5),
+        (re.compile(r'\b(public|private|protected)\s+(static\s+)?void\s+main\s*\(\s*String\[\]'), 5),
+        (re.compile(r'^\s*@\w+'), 4),
+        (re.compile(r'\b(ArrayList|HashMap|List)<'), 3),
+        (re.compile(r'\bboolean\b'), 3),
+    ],
+    'js': [
+        (re.compile(r'import\s+React\s+from\s+["\']react["\'];'), 5),
+        (re.compile(r'module\.exports\s*='), 4),
+        (re.compile(r'async\s+function\b'), 4),
+        (re.compile(r'const\s+\w+\s*=\s*\(.*\)\s*=>'), 3),
+        (re.compile(r'console\.(log|warn|error)\s*\('), 2),
+    ],
+    'kt': [
+        (re.compile(r'import\s+kotlinx\.coroutines'), 5),
+        (re.compile(r'\b(runBlocking|launch|delay)\b'), 4),
+        (re.compile(r'\bdata\s+class\b'), 4),
+        (re.compile(r'\bfun\b\s+main'), 4),
+        (re.compile(r'\b(val|var)\s+\w+\s*:\s*\w+'), 3),
+    ],
+    'php': [
+        (re.compile(r'<\?php'), 5),
+        (re.compile(r'\$\w+'), 4),
+        (re.compile(r'\b(echo|require_once|isset|unset)\b'), 3),
+        (re.compile(r'public\s+function\s+__\w+'), 3),
+        (re.compile(r'->'), 2),
+    ],
+    'py': [
+        # FIX for py_class: Made class parens optional and added __init__
+        (re.compile(r'^\s*class\s+\w+(\(.*\))?:'), 5),
+        (re.compile(r'def\s+__init__\s*\(\s*self'), 5),
+        (re.compile(r'if\s+__name__\s*==\s*["\']__main__["\']\s*:'), 4),
+        (re.compile(r'^\s*import\s+\w+'), 3),
+        (re.compile(r'\bself\b'), 3),
+        (re.compile(r'^\s*(async\s+)?def\s+\w+\s*\(.*\)\s*:'), 2),
+        (re.compile(r'^\s*from\b\s+[\w\.]+\s+\bimport\b'), 2),
+    ],
+    'r': [
+        (re.compile(r'<-'), 5),
+        (re.compile(r'%>%'), 4),
+        (re.compile(r'\b(library|require)\s*\('), 3),
+        (re.compile(r'\b(ggplot|dplyr|c|data\.frame)\b'), 2),
+    ],
+    'rb': [
+        (re.compile(r'\b(do|\{)\s*\|[^\|]+\|'), 5),
+        (re.compile(r'^\s*require\s+["\']'), 3),
+        (re.compile(r'^\s*class\s+\w+\s*<'), 3),
+        (re.compile(r'@\w+'), 3),
+        (re.compile(r'\s:\w+'), 2),
+        (re.compile(r'\b(def|end|elsif|unless)\b'), 2),
+    ],
+    'rs': [
+        (re.compile(r'\bfn\s+main\s*\(\)'), 5),
+        (re.compile(r'\blet\s+mut\b'), 5),
+        (re.compile(r'^\s*use\s+[\w:]+;'), 4),
+        (re.compile(r'\w+!'), 4),
+        (re.compile(r'->\s*(Result<|String)'), 3),
+    ],
+    'scala': [
+        (re.compile(r'import\s+scala\.concurrent'), 5),
+        (re.compile(r'\b(Future|Success|Failure)\b'), 4),
+        (re.compile(r'\bcase\s+(class|object)\b'), 4),
+        (re.compile(r'\b(val|var)\s+\w+\s*:\s*\w+\[\w+\]'), 4),
+        (re.compile(r'\bdef\s+\w+.*:\s*\w+\s*='), 3),
+    ],
+    'sh': [
+        (re.compile(r'^\s*#!/bin/(bash|sh|zsh)'), 5),
+        (re.compile(r'\b(then|fi|done|elif)\b'), 4),
+        (re.compile(r'\$\w+|\$\{\w+\}'), 2),
+    ],
+    'solidity': [
+        (re.compile(r'^\s*pragma\s+solidity\b'), 5),
+        (re.compile(r'\bcontract\s+\w+\s*\{'), 5),
+        (re.compile(r'\b(uint\d*|address|mapping|payable)\b'), 4),
+        (re.compile(r'\b(require|revert|assert)\s*\('), 3),
+    ],
+    'sql': [
+        (re.compile(r'\b(SELECT|FROM|WHERE|JOIN|UPDATE|INSERT\s+INTO|CREATE\s+TABLE)\b', re.IGNORECASE), 5),
+        (re.compile(r'\b(INNER|LEFT|RIGHT|FULL)\s+(OUTER\s+)?JOIN\b', re.IGNORECASE), 4),
+        (re.compile(r'\b(GROUP|ORDER)\s+BY\b', re.IGNORECASE), 3),
+    ],
+    'swift': [
+        # FIX for py_class: Made class rule more specific to Swift.
+        (re.compile(r'\bclass\s+\w+\s*(:\s*\w+)?\s*\{'), 5),
+        (re.compile(r'\bfunc\b.*\)\s*->\s*\w+'), 5),
+        (re.compile(r'\b(protocol|extension)\b\s+\w+'), 5),
+        (re.compile(r'\b(func|struct|enum)\b\s+\w+'), 4),
+        (re.compile(r'\bimport\b\s+(UIKit|SwiftUI|Foundation)\b'), 3),
+    ],
+    'ts': [
+        # FIX for java/cs_full: Made access modifier rule require a colon.
+        (re.compile(r'\b(public|private|protected|readonly)\s+\w+\s*:'), 5),
+        (re.compile(r'\b(interface|type)\s+\w+\s*[={]'), 5),
+        (re.compile(r':\s*(string|number|boolean|any|void|never)'), 4),
+        (re.compile(r'\b(Array|Promise|Map|Set)<\w+>'), 2),
+    ],
+    'yaml': [
+        (re.compile(r'^\s*[\w\.-]+:\s+.*'), 5),
+        (re.compile(r'^---'), 4),
+        (re.compile(r'^\s*-\s+'), 3),
+    ],
+}

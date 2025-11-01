@@ -1,0 +1,182 @@
+[
+    {
+        "id": "cs_simple",
+        "expected": "cs",
+        "code": "public class Game { public int Health { get; set; } }"
+    },
+    {
+        "id": "cs_lambda",
+        "expected": "cs",
+        "code": "Func<int, int> square = x => x * x;"
+    },
+    {
+        "id": "cs_full",
+        "expected": "cs",
+        "code": "private string GetGitDiff() { try { var dte2 = (EnvDTE80.DTE2)ServiceProvider.GlobalProvider.GetService(typeof(EnvDTE.DTE)); using (var repo = new Repository(repositoryPath)) { var diff = repo.Diff.Compare<Patch>(repo.Head.Tip.Tree, DiffTargets.WorkingDirectory); return diff.Content; } } catch (Exception) { } }"
+    },
+    {
+        "id": "py_simple",
+        "expected": "py",
+        "code": "import os\n\nif __name__ == '__main__':\n    print(f'Hello from {os.name}')"
+    },
+    {
+        "id": "py_class",
+        "expected": "py",
+        "code": "class User:\n    def __init__(self, name: str, age: int):\n        self.name = name\n        self.age = age"
+    },
+    {
+        "id": "java_simple",
+        "expected": "java",
+        "code": "import java.util.ArrayList; \n public class Test { // ... }"
+    },
+    {
+        "id": "java_full",
+        "expected": "java",
+        "code": "public boolean checkIsAnyProductDeleted(Order order) { for (OrderItem orderItem : order.getOrderItemList()) { if (isProductDeleted) { productDeletedOfferFlag = true; } } return false; }"
+    },
+    {
+        "id": "js_arrow",
+        "expected": "js",
+        "code": "const greet = (name) => console.log(`Hello, ${name}!`);"
+    },
+    {
+        "id": "yaml_k8s",
+        "expected": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: mypod"
+    },
+    {
+        "id": "sh_shebang",
+        "expected": "sh",
+        "code": "#!/bin/bash\nfor i in {1..5}; do\n  echo \"Welcome $i times\"\ndone"
+    },
+    {
+        "id": "kt_data_class",
+        "expected": "kt",
+        "code": "data class User(val name: String, val age: Int)"
+    },
+    {
+        "id": "swift_func",
+        "expected": "swift",
+        "code": "func greet(person: String) -> String {\n    return \"Hello, \\(person)!\"\n}"
+    },
+    {
+        "id": "scala_case_class",
+        "expected": "scala",
+        "code": "case class Person(name: String, age: Int)"
+    },
+    {
+        "id": "sql_select",
+        "expected": "sql",
+        "code": "SELECT user_id, user_name FROM users WHERE status = 'active' ORDER BY user_id;"
+    },
+    {
+        "id": "cbl_simple",
+        "expected": "cbl",
+        "code": "IDENTIFICATION DIVISION.\nPROGRAM-ID. HELLO.\nPROCEDURE DIVISION.\nDISPLAY 'Hello world'.\nSTOP RUN."
+    },
+    {
+        "id": "plain_text",
+        "expected": "unknown",
+        "code": "This is a sentence that is definitely not code."
+    },
+    {
+        "id": "cs_async_method",
+        "expected": "cs",
+        "code": "using System;\nusing System.Threading.Tasks;\n\npublic class Downloader {\n    public async Task<string> DownloadAsync(string url) {\n        using (var client = new HttpClient()) {\n            return await client.GetStringAsync(url);\n        }\n    }\n}"
+    },
+    {
+        "id": "cs_linq_query",
+        "expected": "cs",
+        "code": "using System.Linq;\nvar scores = new List<int> { 97, 92, 81, 60 };\nvar highScores = from s in scores where s > 80 select s;\nforeach (var score in highScores) {\n    Console.WriteLine(score);\n}"
+    },
+    {
+        "id": "py_async_http",
+        "expected": "py",
+        "code": "import aiohttp\nimport asyncio\n\nasync def fetch(url):\n    async with aiohttp.ClientSession() as session:\n        async with session.get(url) as resp:\n            return await resp.text()\n\nasyncio.run(fetch('https://example.com'))"
+    },
+    {
+        "id": "py_pandas",
+        "expected": "py",
+        "code": "import pandas as pd\n\ndata = {'name': ['Alice', 'Bob', 'Charlie'], 'age': [25, 30, 35]}\ndf = pd.DataFrame(data)\ndf['is_adult'] = df['age'] >= 18\nprint(df)"
+    },
+    {
+        "id": "java_streams",
+        "expected": "java",
+        "code": "import java.util.*;\nimport java.util.stream.*;\n\npublic class StreamExample {\n    public static void main(String[] args) {\n        List<String> names = Arrays.asList(\"Alice\", \"Bob\", \"Charlie\");\n        names.stream()\n             .filter(n -> n.length() > 3)\n             .forEach(System.out::println);\n    }\n}"
+    },
+    {
+        "id": "js_promise_fetch",
+        "expected": "js",
+        "code": "async function fetchData(url) {\n    try {\n        const response = await fetch(url);\n        const data = await response.json();\n        console.log(data);\n    } catch (error) {\n        console.error('Error:', error);\n    }\n}\n\nfetchData('https://api.example.com/data');"
+    },
+    {
+        "id": "js_react_component",
+        "expected": "js",
+        "code": "import React from 'react';\n\nexport default function Greeting({ name }) {\n    return (\n        <div>\n            <h1>Hello, {name}!</h1>\n        </div>\n    );\n}"
+    },
+    {
+        "id": "ts_interface",
+        "expected": "ts",
+        "code": "interface User {\n    name: string;\n    age: number;\n}\n\nconst greet = (user: User): string => {\n    return `Hello, ${user.name}. You are ${user.age} years old.`;\n}\n\nconsole.log(greet({ name: 'Alice', age: 25 }));"
+    },
+    {
+        "id": "kt_coroutine",
+        "expected": "kt",
+        "code": "import kotlinx.coroutines.*\n\nfun main() = runBlocking {\n    launch {\n        delay(1000L)\n        println(\"World!\")\n    }\n    println(\"Hello,\")\n}"
+    },
+    {
+        "id": "swift_struct",
+        "expected": "swift",
+        "code": "struct Car {\n    var make: String\n    var model: String\n\n    func description() -> String {\n        return \"Car: \\(make) \\(model)\"\n    }\n}\n\nlet car = Car(make: \"Tesla\", model: \"Model 3\")\nprint(car.description())"
+    },
+    {
+        "id": "scala_future",
+        "expected": "scala",
+        "code": "import scala.concurrent._\nimport ExecutionContext.Implicits.global\nimport scala.util.{Success, Failure}\n\nval f = Future {\n  Thread.sleep(500)\n  42\n}\n\nf.onComplete {\n  case Success(value) => println(s\"The answer is $value\")\n  case Failure(e) => println(s\"Failed with $e\")\n}"
+    },
+    {
+        "id": "go_http_server",
+        "expected": "go",
+        "code": "package main\n\nimport (\n    \"fmt\"\n    \"net/http\"\n)\n\nfunc handler(w http.ResponseWriter, r *http.Request) {\n    fmt.Fprintf(w, \"Hello, %s!\", r.URL.Path[1:])\n}\n\nfunc main() {\n    http.HandleFunc(\"/\", handler)\n    http.ListenAndServe(\":8080\", nil)\n}"
+    },
+    {
+        "id": "sql_join",
+        "expected": "sql",
+        "code": "SELECT u.id, u.username, o.total\nFROM users u\nJOIN orders o ON u.id = o.user_id\nWHERE o.status = 'completed'\nORDER BY o.total DESC;"
+    },
+    {
+        "id": "yaml_dockercompose",
+        "expected": "yaml",
+        "code": "version: '3'\nservices:\n  web:\n    image: nginx:latest\n    ports:\n      - \"8080:80\"\n  db:\n    image: postgres:13\n    environment:\n      POSTGRES_PASSWORD: example"
+    },
+    {
+        "id": "sh_env_check",
+        "expected": "sh",
+        "code": "#!/bin/bash\n\nif [ -z \"$HOME\" ]; then\n  echo \"HOME is not set\"\nelse\n  echo \"HOME is $HOME\"\nfi"
+    },
+    {
+        "id": "rb_class",
+        "expected": "rb",
+        "code": "class Person\n  attr_accessor :name, :age\n\n  def initialize(name, age)\n    @name = name\n    @age = age\n  end\n\n  def greet\n    puts \"Hello, my name is #{@name}.\"\n  end\nend"
+    },
+    {
+        "id": "php_router",
+        "expected": "php",
+        "code": "<?php\n$path = $_SERVER['REQUEST_URI'];\nif ($path == '/hello') {\n    echo \"Hello World\";\n} else {\n    echo \"Unknown path\";\n}\n?>"
+    },
+    {
+        "id": "rust_result",
+        "expected": "rs",
+        "code": "fn divide(a: f64, b: f64) -> Result<f64, String> {\n    if b == 0.0 {\n        Err(String::from(\"Cannot divide by zero\"))\n    } else {\n        Ok(a / b)\n    }\n}\n\nfn main() {\n    match divide(10.0, 2.0) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}"
+    },
+    {
+        "id": "c_function_pointer",
+        "expected": "c",
+        "code": "#include <stdio.h>\n\nvoid greet(char *name) {\n    printf(\"Hello, %s!\\n\", name);\n}\n\nint main() {\n    void (*func_ptr)(char *) = &greet;\n    func_ptr(\"World\");\n    return 0;\n}"
+    },
+    {
+        "id": "plain_text_doc",
+        "expected": "unknown",
+        "code": "This document explains the structure of the project folder.\nIt is not a code file, and contains no syntax related to programming.\nPlease read carefully before contributing."
+    }
+]

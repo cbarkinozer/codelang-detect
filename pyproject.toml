@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codelang-detect"
+version = "1.0.0" # Do not forget to bump the version after changes
+authors = [
+  { name="cbarkinozer", email="cbarkinozer@gmail.com" },
+]
+description = "A fast, lightweight, zero-dependency programming language detector for Python."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "Apache-2.0" }
+
+keywords = ["language-detection", "code-analysis", "regex", "developer-tools", "lightweight"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/cbarkinozer/codelang-detect"
+"Bug Tracker" = "https://github.com/cbarkinozer/codelang-detect/issues"
+
+# This section creates the command-line tool.
+# 'codelang-detect' is the command you type in the terminal.
+# 'codelang_detect.cli:main' is the path to the function to run.
+[project.scripts]
+codelang-detect = "codelang_detect.cli:main"
+
+
+[tool.setuptools]
+packages = ["codelang_detect"]
