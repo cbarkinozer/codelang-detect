@@ -82,13 +82,12 @@ PATTERNS = {
         (re.compile(r'->'), 2),
     ],
     'py': [
-        # FIX for py_class: Made class parens optional and added __init__
         (re.compile(r'^\s*class\s+\w+(\(.*\))?:'), 5),
         (re.compile(r'def\s+__init__\s*\(\s*self'), 5),
+        (re.compile(r'^\s*(async\s+)?def\s+\w+\s*\(.*\)\s*:'), 5),
         (re.compile(r'if\s+__name__\s*==\s*["\']__main__["\']\s*:'), 4),
         (re.compile(r'^\s*import\s+\w+'), 3),
         (re.compile(r'\bself\b'), 3),
-        (re.compile(r'^\s*(async\s+)?def\s+\w+\s*\(.*\)\s*:'), 2),
         (re.compile(r'^\s*from\b\s+[\w\.]+\s+\bimport\b'), 2),
     ],
     'r': [

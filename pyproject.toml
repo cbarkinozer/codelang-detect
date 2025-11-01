@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "codelang-detect"
-version = "1.0.0" # Do not forget to bump the version after changes
+version = "1.0.1" # Do not forget to bump the version after changes
 authors = [
   { name="cbarkinozer", email="cbarkinozer@gmail.com" },
 ]
