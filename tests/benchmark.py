@@ -1,6 +1,14 @@
-import re
-import timeit
 from collections import defaultdict
+import os
+import timeit
+import json
+import sys
+
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+
+from codelang_detect import detect as detect_codelang
+from codelang_detect._patterns import PATTERNS
 
 try:
     from pygments.lexers import guess_lexer
@@ -24,80 +32,9 @@ def detect_codelang(script: str) -> str:
     """Detect the programming language using a weighted custom regex system."""
     if not script or not script.strip():
         return 'unknown'
-        
-    patterns = {
-        'cs': [
-            (re.compile(r'\{\s*get;\s*set;\s*\}'), 5),
-            (re.compile(r'\b(from|where|select)\s+\w+\s+\b(in|select|group)\b'), 4),
-            (re.compile(r'^\s*\[\w+\]'), 4),
-            (re.compile(r'\busing\s*\('), 4),
-            (re.compile(r'\busing\s+System(\.\w+)*;'), 3),
-            (re.compile(r'\w+\s*=>\s*\w+'), 3),
-            (re.compile(r'\bnamespace\s+[\w\.]+'), 2),
-            (re.compile(r'\b(string|bool|int|double|var)\b'), 1),
-        ],
-        'java': [
-            (re.compile(r'\bboolean\b'), 5),
-            (re.compile(r'public\s+static\s+void\s+main\s*\(\s*String\[\]\s*args\s*\)'), 4),
-            (re.compile(r'^\s*@\w+'), 4),
-            (re.compile(r'\bObjects\.nonNull\b'), 3),
-            (re.compile(r'\bimport\s+java\.\w+\.\w+;'), 3),
-        ],
-        'js': [
-            (re.compile(r'\b(const|let|var)\s+[\w\s,]+\s*=\s*\(?[\w\s,]*\)?\s*=>'), 4),
-            (re.compile(r'\b(const|let)\s+\w+\s*='), 3),
-            (re.compile(r'\basync\s+function\b|\basync\s+\w+\s*=>'), 3),
-            (re.compile(r'console\.(log|warn|error)\s*\('), 2),
-        ],
-        'py': [
-            (re.compile(r'if\s+__name__\s*==\s*["\']__main__["\']\s*:'), 4),
-            (re.compile(r'^\s*@\w+'), 3),
-            (re.compile(r'\bself\b'), 3),
-            (re.compile(r'^\s*(async\s+)?def\s+\w+\s*\(.*\)\s*:'), 2),
-            (re.compile(r'\bfrom\b\s+[\w\.]+\s+\bimport\b'), 2),
-        ],
-        'yaml': [
-            (re.compile(r'^---'), 4),
-            (re.compile(r'^\s*[\w\.-]+:\s+.*'), 3),
-            (re.compile(r'^\s*-\s+'), 2),
-        ],
-        'sh': [
-            (re.compile(r'^\s*#!/bin/(bash|sh|zsh)'), 4),
-            (re.compile(r'\$\{\w+\}|\$\w+'), 3),
-            (re.compile(r'\b(then|fi|done)\b'), 3),
-        ],
-        'kt': [
-            (re.compile(r'\bdata\s+class\b'), 4),
-            (re.compile(r'\bfun\b\s+.*\)\s*:\s*\w+'), 4),
-            (re.compile(r'\bval\b\s+\w+\s*:'), 3),
-            (re.compile(r'\s\?\:|\s\!\!\s'), 2),
-        ],
-        'cbl': [
-            (re.compile(r'^\s*(IDENTIFICATION|ENVIRONMENT|DATA|PROCEDURE)\s+DIVISION\s*\.', re.IGNORECASE), 3),
-            (re.compile(r'^\s*PROGRAM-ID\s*\.', re.IGNORECASE), 3),
-            (re.compile(r'\s(PIC|PICTURE)\s+', re.IGNORECASE), 2),
-        ],
-        'swift': [
-            (re.compile(r'\b(protocol|extension)\b\s+\w+'), 4),
-            (re.compile(r'\b(func|struct|enum)\b\s+\w+'), 3),
-            (re.compile(r'\)\s*->\s*\w+(?!\s*:)'), 3),
-            (re.compile(r'\bimport\b\s+(UIKit|SwiftUI|Foundation)\b'), 3),
-        ],
-        'sql': [
-            (re.compile(r'^\s*(SELECT\s+.*\s+FROM|CREATE\s+TABLE|INSERT\s+INTO)\b', re.IGNORECASE), 4),
-            (re.compile(r'\b(INNER|LEFT|RIGHT|FULL)\s+(OUTER\s+)?JOIN\b', re.IGNORECASE), 3),
-            (re.compile(r'\b(GROUP|ORDER)\s+BY\b', re.IGNORECASE), 3),
-        ],
-        'scala': [
-            (re.compile(r'\bcase\s+class\b'), 4),
-            (re.compile(r'\b(val|var)\s+\w+\s*:\s*\w+\[\w+\]'), 4),
-            (re.compile(r'\bdef\s+\w+\s*\(.*\)\s*:\s*\w+\s*='), 3),
-            (re.compile(r'\bobject\b\s+\w+\s*(extends|\{)'), 3),
-        ],
-    }
     
     match_counts = defaultdict(int)
-    for lang, rules in patterns.items():
+    for lang, rules in PATTERNS.items():
         for regex, weight in rules:
             if regex.search(script):
                 match_counts[lang] += weight
@@ -113,23 +50,40 @@ def detect_codelang(script: str) -> str:
 
 # Central map to normalize all outputs to a consistent file extension.
 LANG_ALIAS_MAP = {
-    'csharp': 'cs',
+    'bash': 'sh',
+    'c': 'c',
     'c#': 'cs',
+    'c++': 'cpp',
     'c-sharp': 'cs',
-    'python': 'py',
-    'python3': 'py',
+    'cbl': 'cbl',
+    'cobol': 'cbl',
+    'cpp': 'cpp',
+    'cplusplus': 'cpp',
+    'csharp': 'cs',
+    'dart': 'dart',
+    'go': 'go',
+    'golang': 'go',
+    'java': 'java',
     'javascript': 'js',
     'jsx': 'js',
-    'shell': 'sh',
-    'bash': 'sh',
-    'yaml': 'yaml',
     'kotlin': 'kt',
-    'cobol': 'cbl',
-    'java': 'java',
+    'php': 'php',
+    'python': 'py',
+    'python3': 'py',
+    'r': 'r',
+    'ruby': 'rb',
+    'rust': 'rust',
+    'scala': 'scala',
+    'shell': 'sh',
+    'sol': 'sol',
+    'solidity': 'sol',
     'sql': 'sql',
     'swift': 'swift',
-    'scala': 'scala',
     'text': 'unknown',
+    'ts': 'ts',
+    'tsx': 'ts',
+    'typescript': 'ts',
+    'yaml': 'yaml',
 }
 
 def detect_pygments(script: str) -> str:
@@ -154,24 +108,17 @@ def detect_whatsthatcode(script: str) -> str:
 # ==============================================================================
 #  BENCHMARK DATASET
 # ==============================================================================
-code_samples = [
-    {'id': 'cs_simple', 'expected': 'cs', 'code': "public class Game { public int Health { get; set; } }"},
-    {'id': 'cs_lambda', 'expected': 'cs', 'code': 'Func<int, int> square = x => x * x;'},
-    {'id': 'cs_full', 'expected': 'cs', 'code':"private string GetGitDiff() { try { var dte2 = (EnvDTE80.DTE2)ServiceProvider.GlobalProvider.GetService(typeof(EnvDTE.DTE)); using (var repo = new Repository(repositoryPath)) { var diff = repo.Diff.Compare<Patch>(repo.Head.Tip.Tree, DiffTargets.WorkingDirectory); return diff.Content; } } catch (Exception) { } }"},
-    {'id': 'py_simple', 'expected': 'py', 'code': "import os\n\nif __name__ == '__main__':\n    print(f'Hello from {os.name}')"},
-    {'id': 'py_class', 'expected': 'py', 'code':"class User:\n    def __init__(self, name: str, age: int):\n        self.name = name\n        self.age = age"},
-    {'id': 'java_simple', 'expected': 'java', 'code': "import java.util.ArrayList; \n public class Test { // ... }"},
-    {'id': 'java_full', 'expected': 'java', 'code': "public boolean checkIsAnyProductDeleted(Order order) { for (OrderItem orderItem : order.getOrderItemList()) { if (isProductDeleted) { productDeletedOfferFlag = true; } } return false; }"},
-    {'id': 'js_arrow', 'expected': 'js', 'code': "const greet = (name) => console.log(`Hello, ${name}!`);"},
-    {'id': 'yaml_k8s', 'expected': 'yaml', 'code': "apiVersion: v1\nkind: Pod\nmetadata:\n  name: mypod"},
-    {'id': 'sh_shebang', 'expected': 'sh', 'code': "#!/bin/bash\nfor i in {1..5}; do\n  echo \"Welcome $i times\"\ndone"},
-    {'id': 'kt_data_class', 'expected': 'kt', 'code': "data class User(val name: String, val age: Int)"},
-    {'id': 'swift_func', 'expected': 'swift', 'code': "func greet(person: String) -> String {\n    return \"Hello, \\(person)!\"\n}"},
-    {'id': 'scala_case_class', 'expected': 'scala', 'code': "case class Person(name: String, age: Int)"},
-    {'id': 'sql_select', 'expected': 'sql', 'code': "SELECT user_id, user_name FROM users WHERE status = 'active' ORDER BY user_id;"},
-    {'id': 'cbl_simple', 'expected': 'cbl', 'code': "IDENTIFICATION DIVISION.\nPROGRAM-ID. HELLO.\nPROCEDURE DIVISION.\nDISPLAY 'Hello world'.\nSTOP RUN."},
-    {'id': 'plain_text', 'expected': 'unknown', 'code': "This is a sentence that is definitely not code."},
-]
+
+def load_code_samples():
+    """Loads code samples from the test_data.json file."""
+    # Construct a path relative to this script file
+    script_dir = os.path.dirname(__file__)
+    json_path = os.path.join(script_dir, 'test_data.json')
+    with open(json_path, 'r', encoding='utf-8') as f:
+        return json.load(f)
+    
+code_samples = load_code_samples()
+
 
 # ==============================================================================
 #  BENCHMARK EXECUTION LOGIC
