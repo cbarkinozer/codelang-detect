@@ -1,5 +1,5 @@
 # For benchmarking
-# codelang-detect (check requirements.txt) does not use have any dependencies
+# codelang-detect (check requirements.txt) does not have any dependencies
 pygments==2.19.2
 whats-that-code==0.2.0
 # enry==0.1.1 #  error in enry setup command: 'build_enry.py' does not name an existing file
