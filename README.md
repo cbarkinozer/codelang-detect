@@ -2,6 +2,8 @@
 
 A fast, lightweight, regex-based programming language detector for Python.
 
+[![Repo Introduction Video](codelang-detect-thumbnail.png)](https://www.youtube.com/watch?v=bsB47ZS5tsQ)
+
 [![PyPI version](https://img.shields.io/pypi/v/codelang-detect.svg)](https://pypi.org/project/codelang-detect/)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/cbarkinozer/codelang-detect/ci.yml?branch=main)](https://github.com/cbarkinozer/codelang-detect/actions)
 [![Python Versions](https://img.shields.io/pypi/pyversions/codelang-detect.svg)](https://pypi.org/project/codelang-detect/)
