@@ -42,15 +42,20 @@ def test_cli_with_stdin_pipe(monkeypatch, capsys):
     assert captured.out == "js\n"
     assert captured.err == ""
 
-def test_cli_error_handling(monkeypatch, capsys):  # <-- Add monkeypatch here
+
+def test_cli_error_handling(monkeypatch, capsys):
     """
     Tests that the CLI exits gracefully when reading from stdin fails.
     """
     # Set clean arguments so pytest's args don't interfere
-    monkeypatch.setattr(sys, 'argv', ['codelang-detect']) # <-- Add this line
+    monkeypatch.setattr(sys, 'argv', ['codelang-detect'])
 
-    # Simulate a scenario where reading from a closed stdin fails
-    sys.stdin.close()
+    # Create a dummy stdin stream and immediately close it.
+    # Better than closing sys.stdin directly, as it avoids
+    # side effects that could affect other tests.
+    dummy_stdin = io.StringIO("")
+    monkeypatch.setattr(sys, 'stdin', dummy_stdin)
+    dummy_stdin.close()
     
     with pytest.raises(SystemExit) as e:
         main()
