@@ -1,6 +1,1 @@
-# The following are for benchmarking, codelang-detect does not use have any dependencies
-pygments==2.19.2
-whats-that-code==0.2.0
-# enry==0.1.1 #  error in enry setup command: 'build_enry.py' does not name an existing file
-pygments-github-lexers==0.0.5
-# guesslang==2.2.1 # Could not find a version that satisfies the requirement tensorflow==2.5.0 (from guesslang) (from versions: 2.20.0rc0, 2.20.0)
+# This project has no dependency as intended :)

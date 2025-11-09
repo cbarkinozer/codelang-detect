@@ -174,6 +174,15 @@ For example:
 
 The library runs all regexes against the input code, sums the weights for each language, and returns the language with the highest score. It's simple, transparent, and incredibly fast.
 
+### Running Tests
+This project uses pytest for testing. To run the test suite, first install the development dependencies and then run pytest:
+```bash
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run the test suite
+pytest
+```
 ### Contributing
 
 Contributions are welcome and appreciated! This project was started to fill a gap, and community help is the best way to make it the definitive tool for this job.
