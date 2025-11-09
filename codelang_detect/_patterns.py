@@ -22,14 +22,10 @@ PATTERNS = {
         (re.compile(r'template\s*<.*>'), 3),
     ],
     'cs': [
-        # FIX for cs_async_method: Added async Task and using statement, which are uniquely C#.
         (re.compile(r'\basync\s+Task<'), 5),
         (re.compile(r'\busing\s*\('), 5),
-        # FIX for cs_lambda: Added Func/Action delegates.
         (re.compile(r'\b(Func|Action)<\w+'), 5),
-        # FIX for cs_full: Added typeof() operator.
         (re.compile(r'\btypeof\s*\('), 5),
-        # Existing high-confidence rules
         (re.compile(r'\{\s*get;\s*set;\s*\}'), 5),
         (re.compile(r'\b(from|where|select)\s+\w+\s+\b(in|select|group)\b'), 4),
         (re.compile(r'^\s*\[\w+\]'), 4),
@@ -52,7 +48,6 @@ PATTERNS = {
         (re.compile(r'if\s+err\s*!=\s*nil'), 3),
     ],
     'java': [
-        # FIX for java_full: Added for-each loop syntax, a huge Java signal
         (re.compile(r'for\s*\(\s*[\w\.<>\[\]]+\s+\w+\s*:\s*\w+'), 5),
         (re.compile(r'import\s+java\.util\.(stream|List|Arrays|ArrayList);'), 5),
         (re.compile(r'\b(public|private|protected)\s+(static\s+)?void\s+main\s*\(\s*String\[\]'), 5),
@@ -135,7 +130,6 @@ PATTERNS = {
         (re.compile(r'\b(GROUP|ORDER)\s+BY\b', re.IGNORECASE), 3),
     ],
     'swift': [
-        # FIX for py_class: Made class rule more specific to Swift.
         (re.compile(r'\bclass\s+\w+\s*(:\s*\w+)?\s*\{'), 5),
         (re.compile(r'\bfunc\b.*\)\s*->\s*\w+'), 5),
         (re.compile(r'\b(protocol|extension)\b\s+\w+'), 5),
@@ -143,7 +137,6 @@ PATTERNS = {
         (re.compile(r'\bimport\b\s+(UIKit|SwiftUI|Foundation)\b'), 3),
     ],
     'ts': [
-        # FIX for java/cs_full: Made access modifier rule require a colon.
         (re.compile(r'\b(public|private|protected|readonly)\s+\w+\s*:'), 5),
         (re.compile(r'\b(interface|type)\s+\w+\s*[={]'), 5),
         (re.compile(r':\s*(string|number|boolean|any|void|never)'), 4),
