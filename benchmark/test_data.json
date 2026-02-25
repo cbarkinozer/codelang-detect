@@ -35,6 +35,21 @@
         "code": "public class Game { public int Health { get; set; } }"
     },
     {
+        "id": "cs_embedded_sql_misclassified_as_sql",
+        "expected": "cs",
+        "code": "public class DatabaseRepository {\n    public string GetActiveUsersQuery() {\n        string query = @\"\n            SELECT users.id, users.name\n            FROM users\n            INNER JOIN orders ON users.id = orders.user_id\n            WHERE users.active = 1\n        \";\n        return query;\n    }\n}"
+    },
+    {
+        "id": "cs_linq_misclassified_as_sql",
+        "expected": "cs",
+        "code": "var activeUsers = from user in users\n                  where user.Age > 18\n                  orderby user.Name\n                  select user.Email;"
+    },
+    {
+        "id": "dart_pojo_misclassified_as_swift",
+        "expected": "dart",
+        "code": "class ApplicationSettings {\n    String theme;\n    bool notificationsEnabled;\n\n    ApplicationSettings(this.theme, this.notificationsEnabled);\n}"
+    },
+    {
         "id": "go_http_server",
         "expected": "go",
         "code": "package main\n\nimport (\n    \"fmt\"\n    \"net/http\"\n)\n\nfunc handler(w http.ResponseWriter, r *http.Request) {\n    fmt.Fprintf(w, \"Hello, %s!\", r.URL.Path[1:])\n}\n\nfunc main() {\n    http.HandleFunc(\"/\", handler)\n    http.ListenAndServe(\":8080\", nil)\n}"
@@ -55,6 +70,11 @@
         "code": "import java.util.*;\nimport java.util.stream.*;\n\npublic class StreamExample {\n    public static void main(String[] args) {\n        List<String> names = Arrays.asList(\"Alice\", \"Bob\", \"Charlie\");\n        names.stream()\n             .filter(n -> n.length() > 3)\n             .forEach(System.out::println);\n    }\n}"
     },
     {
+        "id": "java_pojo_misclassified_as_swift",
+        "expected": "java",
+        "code": "package com.example.models;\n\npublic class User {\n    private String name;\n    private int age;\n\n    public User(String name, int age) {\n        this.name = name;\n        this.age = age;\n    }\n}"
+    },
+    {
         "id": "js_arrow",
         "expected": "js",
         "code": "const greet = (name) => console.log(`Hello, ${name}!`);"
@@ -70,6 +90,16 @@
         "code": "import React from 'react';\n\nexport default function Greeting({ name }) {\n    return (\n        <div>\n            <h1>Hello, {name}!</h1>\n        </div>\n    );\n}"
     },
     {
+        "id": "js_config_misclassified_as_yaml",
+        "expected": "js",
+        "code": "const serverConfig = {\n    host: '127.0.0.1',\n    port: 3000,\n    active: true,\n    environment: 'production'\n};"
+    },
+    {
+        "id": "js_es6_class_misclassified_as_swift",
+        "expected": "js",
+        "code": "import { calculateTotal } from './utils.js';\n\nexport class ShoppingCart {\n    constructor() {\n        this.items = [];\n    }\n    \n    addItem(item) {\n        this.items.push(item);\n    }\n}"
+    },
+    {
         "id": "kt_coroutine",
         "expected": "kt",
         "code": "import kotlinx.coroutines.*\n\nfun main() = runBlocking {\n    launch {\n        delay(1000L)\n        println(\"World!\")\n    }\n    println(\"Hello,\")\n}"
@@ -78,6 +108,11 @@
         "id": "kt_data_class",
         "expected": "kt",
         "code": "data class User(val name: String, val age: Int)"
+    },
+    {
+        "id": "kotlin_observer_misclassified_as_swift",
+        "expected": "kt",
+        "code": "package com.example.ui\n\nimport androidx.lifecycle.Observer\n\nclass ProfileObserver : Observer {\n    private var userName: String = \"Guest\"\n\n    fun updateName(newName: String) {\n        this.userName = newName\n    }\n}"
     },
     {
         "id": "php_router",
@@ -120,6 +155,11 @@
         "code": "fn divide(a: f64, b: f64) -> Result<f64, String> {\n    if b == 0.0 {\n        Err(String::from(\"Cannot divide by zero\"))\n    } else {\n        Ok(a / b)\n    }\n}\n\nfn main() {\n    match divide(10.0, 2.0) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}"
     },
     {
+        "id": "rs_library_code_undetected",
+        "expected": "rs",
+        "code": "pub struct Configuration {\n    pub address: String,\n    pub max_connections: u16,\n}\n\nimpl Configuration {\n    pub fn new(address: String, max_connections: u16) -> Configuration {\n        Configuration { address, max_connections }\n    }\n}"
+    },
+    {
         "id": "scala_case_class",
         "expected": "scala",
         "code": "case class Person(name: String, age: Int)"
@@ -128,6 +168,11 @@
         "id": "scala_future",
         "expected": "scala",
         "code": "import scala.concurrent._\nimport ExecutionContext.Implicits.global\nimport scala.util.{Success, Failure}\n\nval f = Future {\n  Thread.sleep(500)\n  42\n}\n\nf.onComplete {\n  case Success(value) => println(s\"The answer is $value\")\n  case Failure(e) => println(s\"Failed with $e\")\n}"
+    },
+    {
+        "id": "scala_oop_misclassified_as_swift",
+        "expected": "scala",
+        "code": "class ShoppingCart {\n    private var items: List[String] = List()\n    \n    def addItem(item: String): Unit = {\n        items = items :+ item\n    }\n}"
     },
     {
         "id": "sh_env_check",
@@ -163,6 +208,11 @@
         "id": "ts_interface",
         "expected": "ts",
         "code": "interface User {\n    name: string;\n    age: number;\n}\n\nconst greet = (user: User): string => {\n    return `Hello, ${user.name}. You are ${user.age} years old.`;\n}\n\nconsole.log(greet({ name: 'Alice', age: 25 }));"
+    },
+    {
+        "id": "ts_nestjs_service_misclassified_as_js",
+        "expected": "ts",
+        "code": "import { Injectable } from '@nestjs/common';\n\n@Injectable()\nexport class UserService {\n    constructor() {}\n\n    public getUser(id: number): boolean {\n        return true;\n    }\n}"
     },
     {
         "id": "yaml_dockercompose",
