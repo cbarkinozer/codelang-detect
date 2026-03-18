@@ -84,6 +84,11 @@ LANG_ALIAS_MAP = {
     'tsx': 'ts',
     'typescript': 'ts',
     'yaml': 'yaml',
+    'css': 'css',
+    'groovy': 'groovy',
+    'html': 'html',
+    'json': 'json',
+    'xml': 'xml',
 }
 
 def detect_pygments(script: str) -> str:

@@ -33,17 +33,17 @@ Many existing language detectors have significant trade-offs:
 
 ### Benchmark: Accuracy & Performance
 
-The results speak for themselves. On a [curated set of 36 code snippets](https://github.com/cbarkinozer/codelang-detect/blob/main/tests/test_data.json) designed to test real-world accuracy, `codelang-detect` is both significantly more accurate and an order of magnitude faster than other popular, lightweight libraries.
+The results speak for themselves. On a [curated set of 60 code snippets](https://github.com/cbarkinozer/codelang-detect/blob/main/tests/test_data.json) designed to test real-world accuracy, `codelang-detect` is both significantly more accurate and faster than other popular, lightweight libraries.
 
 | Library                    | Accuracy  | Avg. Time / Sample (µs) | Dependencies     |
 | -------------------------- | :-------: | :---------------------: | ---------------- |
-| **`codelang-detect` (Ours)** | **100%**  |       **~173 µs**     | **None**         |
-| `Pygments`                 |  22.2%    |       ~1395 µs        | None             |
-| `WhatsThatCode`            |  30.6%    |       ~1881 µs        | None             |
+| **`codelang-detect` (Ours)** | **100%**  |     **~1525 µs**      | **None**         |
+| `Pygments`                 |  23.3%    |       ~4394 µs        | None             |
+| `WhatsThatCode`            |  31.7%    |      ~10089 µs        | None             |
 
 *Benchmarks run on Python 3.13. Your results may vary.*
 
-As the results show, `codelang-detect` is not only the most accurate solution on this test suite but also **~8x faster than `Pygments`** and **~11x faster than `WhatsThatCode`**, all while maintaining zero dependencies.
+As the results show, `codelang-detect` is not only the most accurate solution on this test suite but also **~3x faster than `Pygments`** and **~7x faster than `WhatsThatCode`**, all while maintaining zero dependencies.
 
 <details>
 <summary>Click to see detailed accuracy breakdown</summary>
@@ -52,42 +52,72 @@ As the results show, `codelang-detect` is not only the most accurate solution on
 --- Accuracy Benchmark ---
 | Test Case          | Expected   | Codelang-Detect (Ours) | Pygments               | WhatsThatCode          |
 --------------------------------------------------------------------------------------------------------------
-| cs_simple          | cs         | cs                  ✅ | unknown             ❌ | java                ❌ |
-| cs_lambda          | cs         | cs                  ✅ | scdoc               ❌ | unknown             ❌ |
-| cs_full            | cs         | cs                  ✅ | gdscript            ❌ | unknown             ❌ |
-| py_simple          | py         | py                  ✅ | py                  ✅ | py                  ✅ |
-| py_class           | py         | py                  ✅ | perl6               ❌ | py                  ✅ |
-| java_simple        | java       | java                ✅ | py                  ❌ | java                ✅ |
-| java_full          | java       | java                ✅ | teratermmacro       ❌ | unknown             ❌ |
-| js_arrow           | js         | js                  ✅ | gdscript            ❌ | unknown             ❌ |
-| yaml_k8s           | yaml       | yaml                ✅ | actionscript3       ❌ | unknown             ❌ |
-| sh_shebang         | sh         | sh                  ✅ | sh                  ✅ | sh                  ✅ |
-| kt_data_class      | kt         | kt                  ✅ | ssp                 ❌ | unknown             ❌ |
-| swift_func         | swift      | swift               ✅ | gdscript            ❌ | unknown             ❌ |
-| scala_case_class   | scala      | scala               ✅ | unknown             ❌ | unknown             ❌ |
-| sql_select         | sql        | sql                 ✅ | scdoc               ❌ | unknown             ❌ |
+| c_function_pointer | c          | c                   ✅ | c                   ✅ | unknown             ❌ |
 | cbl_simple         | cbl        | cbl                 ✅ | componentpascal     ❌ | unknown             ❌ |
-| plain_text         | unknown    | unknown             ✅ | unknown             ✅ | unknown             ✅ |
 | cs_async_method    | cs         | cs                  ✅ | gdscript            ❌ | cs                  ✅ |
-| cs_linq_query      | cs         | cs                  ✅ | gdscript            ❌ | js                  ❌ |
-| py_async_http      | py         | py                  ✅ | py                  ✅ | unknown             ❌ |
-| py_pandas          | py         | py                  ✅ | py                  ✅ | unknown             ❌ |
+| cs_full            | cs         | cs                  ✅ | gdscript            ❌ | java                ❌ |
+| cs_lambda          | cs         | cs                  ✅ | scdoc               ❌ | unknown             ❌ |
+| cs_linq_query      | cs         | cs                  ✅ | gdscript            ❌ | unknown             ❌ |
+| cs_simple          | cs         | cs                  ✅ | unknown             ❌ | java                ❌ |
+| cs_embedded_sql    | cs         | cs                  ✅ | objective-c         ❌ | unknown             ❌ |
+| cs_linq            | cs         | cs                  ✅ | gdscript            ❌ | unknown             ❌ |
+| css_scrollbar      | css        | css                 ✅ | cplint              ❌ | cpp                 ❌ |
+| dart_pojo          | dart       | dart                ✅ | perl6               ❌ | js                  ❌ |
+| go_http_server     | go         | go                  ✅ | py                  ❌ | go                  ✅ |
+| groovy_basic       | groovy     | groovy              ✅ | py                  ❌ | unknown             ❌ |
+| java_full          | java       | java                ✅ | teratermmacro       ❌ | unknown             ❌ |
+| java_simple        | java       | java                ✅ | py                  ❌ | java                ✅ |
 | java_streams       | java       | java                ✅ | py                  ❌ | unknown             ❌ |
+| java_pojo          | java       | java                ✅ | carbon              ❌ | unknown             ❌ |
+| js_arrow           | js         | js                  ✅ | gdscript            ❌ | unknown             ❌ |
 | js_promise_fetch   | js         | js                  ✅ | gdscript            ❌ | unknown             ❌ |
 | js_react_component | js         | js                  ✅ | py                  ❌ | unknown             ❌ |
-| ts_interface       | ts         | ts                  ✅ | gdscript            ❌ | unknown             ❌ |
+| js_config          | js         | js                  ✅ | gdscript            ❌ | unknown             ❌ |
+| js_es6             | js         | js                  ✅ | py                  ❌ | js                  ✅ |
+| json_dependencies  | json       | json                ✅ | unknown             ❌ | json                ✅ |
+| json_package       | json       | json                ✅ | carbon              ❌ | json                ✅ |
 | kt_coroutine       | kt         | kt                  ✅ | py                  ❌ | py                  ❌ |
-| swift_struct       | swift      | swift               ✅ | gdscript            ❌ | unknown             ❌ |
-| scala_future       | scala      | scala               ✅ | py                  ❌ | unknown             ❌ |
-| go_http_server     | go         | go                  ✅ | py                  ❌ | go                  ✅ |
-| sql_join           | sql        | sql                 ✅ | scdoc               ❌ | unknown             ❌ |
-| yaml_dockercompose | yaml       | yaml                ✅ | scdoc               ❌ | unknown             ❌ |
-| sh_env_check       | sh         | sh                  ✅ | sh                  ✅ | sh                  ✅ |
+| kt_data_class      | kt         | kt                  ✅ | ssp                 ❌ | unknown             ❌ |
+| kotlin_observer    | kt         | kt                  ✅ | py                  ❌ | unknown             ❌ |
+| php_router         | php        | php                 ✅ | javascript+php      ❌ | unknown             ❌ |
+| py_async_http      | py         | py                  ✅ | py                  ✅ | unknown             ❌ |
+| py_class           | py         | py                  ✅ | perl6               ❌ | rb                  ❌ |
+| py_helloworld      | py         | py                  ✅ | unknown             ❌ | py                  ✅ |
+| py_pandas          | py         | py                  ✅ | py                  ✅ | unknown             ❌ |
+| py_simple          | py         | py                  ✅ | py                  ✅ | unknown             ❌ |
+| py_service         | py         | py                  ✅ | py                  ✅ | py                  ✅ |
+| py_sqlalchemy      | py         | py                  ✅ | py                  ✅ | py                  ✅ |
+| py_fastapi_router  | py         | py                  ✅ | py                  ✅ | py                  ✅ |
+| py_try_except      | py         | py                  ✅ | actionscript3       ❌ | java                ❌ |
+| py_unittest        | py         | py                  ✅ | tsql                ❌ | py                  ✅ |
 | rb_class           | rb         | rb                  ✅ | tsql                ❌ | rb                  ✅ |
-| php_router         | php        | php                 ✅ | javascript+php      ❌ | php                 ✅ |
 | rust_result        | rs         | rs                  ✅ | ecl                 ❌ | unknown             ❌ |
-| c_function_pointer | c          | c                   ✅ | c                   ✅ | unknown             ❌ |
+| rs_library_code    | rs         | rs                  ✅ | carbon              ❌ | unknown             ❌ |
+| scala_case_class   | scala      | scala               ✅ | unknown             ❌ | unknown             ❌ |
+| scala_future       | scala      | scala               ✅ | py                  ❌ | unknown             ❌ |
+| scala_oop          | scala      | scala               ✅ | tsql                ❌ | unknown             ❌ |
+| sh_env_check       | sh         | sh                  ✅ | sh                  ✅ | sh                  ✅ |
+| sh_shebang         | sh         | sh                  ✅ | sh                  ✅ | sh                  ✅ |
+| sql_join           | sql        | sql                 ✅ | scdoc               ❌ | unknown             ❌ |
+| sql_select         | sql        | sql                 ✅ | scdoc               ❌ | unknown             ❌ |
+| swift_func         | swift      | swift               ✅ | gdscript            ❌ | unknown             ❌ |
+| swift_struct       | swift      | swift               ✅ | gdscript            ❌ | unknown             ❌ |
+| ts_interface       | ts         | ts                  ✅ | gdscript            ❌ | unknown             ❌ |
+| ts_nestjs          | ts         | ts                  ✅ | py                  ❌ | unknown             ❌ |
+| yaml_dockercompose | yaml       | yaml                ✅ | scdoc               ❌ | unknown             ❌ |
+| yaml_k8s           | yaml       | yaml                ✅ | actionscript3       ❌ | unknown             ❌ |
+| plain_text         | unknown    | unknown             ✅ | unknown             ✅ | unknown             ✅ |
 | plain_text_doc     | unknown    | unknown             ✅ | unknown             ✅ | unknown             ✅ |
+| html_basic         | html       | html                ✅ | html                ✅ | html                ✅ |
+| html_form          | html       | html                ✅ | xml                 ❌ | unknown             ❌ |
+| xml_simple         | xml        | xml                 ✅ | xml                 ✅ | xml                 ✅ |
+| xml_maven          | xml        | xml                 ✅ | xml                 ✅ | xml                 ✅ |
+--------------------------------------------------------------------------------------------------------------
+
+--- Accuracy Summary ---
+Codelang-Detect (Ours)   : 60/60 correct (100.0%)
+Pygments                 : 14/60 correct (23.3%)
+WhatsThatCode            : 19/60 correct (31.7%)
 ```
 
 </details>
@@ -147,10 +177,14 @@ cat deployment.yaml | codelang-detect
 -   C++ (`cpp`)
 -   C# (`cs`)
 -   COBOL (`cbl`)
+-   CSS (`css`)
 -   Dart (`dart`)
 -   Go (`go`)
+-   Groovy (`groovy`)
+-   HTML (`html`)
 -   Java (`java`)
 -   JavaScript (`js`)
+-   JSON (`json`)
 -   Kotlin (`kt`)
 -   PHP (`php`)
 -   Python (`py`)
@@ -163,6 +197,7 @@ cat deployment.yaml | codelang-detect
 -   SQL (`sql`)
 -   Swift (`swift`)
 -   TypeScript (`ts`)
+-   XML (`xml`)
 -   YAML (`yaml`)
 
 ### How It Works
