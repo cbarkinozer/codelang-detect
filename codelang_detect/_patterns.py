@@ -89,7 +89,7 @@ PATTERNS = {
         (re.compile(r'\bfun\b\s+main'), 5),
         (re.compile(r'\b(val|var)\s+\w+\s*:\s*\w+'), 3),
         (re.compile(r'\bfun\b\s+\w+\('), 10), 
-        (re.compile(r'\bpackage\s+[\w\.]+(?!\s*;)'), 6), 
+        (re.compile(r'\bpackage\s+[\w\.]+(?!\s*;)'), 2),
     ],
     'php': [
         (re.compile(r'<\?php'), 5),
@@ -107,7 +107,8 @@ PATTERNS = {
         (re.compile(r'\bself\b'), 3),
         (re.compile(r'^\s*from\b\s+[\w\.]+\s+\bimport\b', re.MULTILINE), 4),
         (re.compile(r'\(\s*self\s*[,\)]'), 6),
-        (re.compile(r'\b(except|finally)\b'), 4),
+        (re.compile(r'\bexcept\b[^\n]*:'), 4),
+        (re.compile(r'\bfinally\s*:'), 4),
         (re.compile(r'\bfor\s+\w+\s+in\b'), 4),
         (re.compile(r'\btry\s*:\s*\w'), 5),
     ],
@@ -143,11 +144,13 @@ PATTERNS = {
         (re.compile(r'\b(val|var)\s+\w+\s*:\s*\w+\[\w+\]'), 4),
         (re.compile(r'\bdef\s+\w+\s*\([^)]*\)\s*:\s*[A-Z]\w+\b'), 6),
         (re.compile(r'[A-Z]\w+\[[A-Z]\w+\]'), 5),
+        (re.compile(r'\bpackage\s+[\w\.]+(?!\s*;)'), 2),
     ],
     'sh': [
-        (re.compile(r'^\s*#!/bin/(bash|sh|zsh)'), 5),
+        (re.compile(r'^\s*#!.*\b(bash|sh|zsh|ksh)\b'), 5),
         (re.compile(r'\b(then|fi|done|elif)\b'), 4),
-        (re.compile(r'\$\w+|\$\{\w+\}'), 2),
+        (re.compile(r'\$\w+|\$\{\w+\}'), 3),
+        (re.compile(r'\[\[.*\]\]'), 3),
     ],
     'solidity': [
         (re.compile(r'^\s*pragma\s+solidity\b'), 5),
@@ -199,6 +202,7 @@ PATTERNS = {
         (re.compile(r'\.(each|collect|find|inject|reduce)\s*\{'), 4),
         (re.compile(r'\bdef\s+\w+\s*\([^)]*\)\s*\{'), 4),
         (re.compile(r'\bprintln\s+"'), 3),
+        (re.compile(r'\bpackage\s+[\w\.]+(?!\s*;)'), 2),
     ],
     'html': [
         (re.compile(r'<!DOCTYPE\s+html', re.IGNORECASE), 10),

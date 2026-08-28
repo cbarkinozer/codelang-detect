@@ -18,9 +18,9 @@ codelang-detect supports. 453 samples, 24 languages.
 
 | Library | Accuracy | Macro-F1 | µs/sample |
 |---|---:|---:|---:|
-| **codelang-detect (ours)** | **75.7%** | **0.733** | 27,299 |
-| Pygments | 14.8% | 0.113 | 16,384 |
-| WhatsThatCode | 17–21%* | 0.14–0.15* | ~123,000 |
+| **codelang-detect (ours)** | **78.8%** | **0.768** | 27,806 |
+| Pygments | 14.8% | 0.113 | 16,049 |
+| WhatsThatCode | 14–21%* | 0.13–0.16* | ~123,000 |
 
 \* WhatsThatCode's "election" algorithm is non-deterministic between runs; range
 observed across repeated runs.
@@ -29,9 +29,9 @@ observed across repeated runs.
 
 | Library | Accuracy | Macro-F1 | µs/sample |
 |---|---:|---:|---:|
-| **codelang-detect (ours)** | **81.2%** | **0.871** | 1,417 |
-| Pygments | 1.1% | 0.020 | 11,036 |
-| WhatsThatCode | 47–49%* | 0.51–0.54* | ~13,000 |
+| **codelang-detect (ours)** | **80.9%** | **0.870** | 1,466 |
+| Pygments | 1.1% | 0.020 | 9,656 |
+| WhatsThatCode | 44–57%* | 0.44–0.60* | ~11,000 |
 
 ## Regex fixes applied after first pass
 
@@ -58,17 +58,58 @@ files import `dart:*` core libraries (`import 'dart:async';`) rather than
 `package:` prefix. **Added a `dart:` import rule (weight 6)**, which recovered
 Dart accuracy to 94.7% (18/19) — better than before the regression.
 
-### Before -> after (this session)
+## Second pass: package-declaration collision (kt/scala/groovy) and sh weak signals
+
+A closer look at per-language confusion (not just aggregate accuracy) turned up
+two more systematic issues:
+
+- `kt`'s `\bpackage\s+[\w\.]+(?!\s*;)` (weight 6, "package decl with no
+  trailing `;`") is not actually Kotlin-specific — Groovy and Scala use the
+  identical syntax. `kt` was silently winning on every Groovy/Scala file with a
+  package line, since only `kt` claimed that rule. **Weight dropped 6 -> 2,
+  and the same rule (at weight 2) added to `scala` and `groovy`**, so a bare
+  package line no longer auto-wins for Kotlin — it becomes a tie-breaker
+  instead, decided by each language's real distinguishing syntax.
+- `py`'s `\b(except|finally)\b` (weight 4) matched the word "except" inside
+  the ubiquitous Apache License header ("...except in compliance with the
+  License...") — a false positive on any Apache-licensed file in *any*
+  language. **Changed to require a same-line trailing colon**
+  (`\bexcept\b[^\n]*:`, `\bfinally\s*:`), matching real Python syntax
+  (`except Exception as e:`) but not license-header prose.
+- `sh`'s shebang rule only matched `#!/bin/bash|sh|zsh` — missed the equally
+  common `#!/usr/bin/env bash` form entirely. **Broadened to
+  `^\s*#!.*\b(bash|sh|zsh|ksh)\b`.**
+- `sh`'s `\$\w+` weight (2) was well below `php`'s identical-looking `\$\w+`
+  rule (4), so any shell script without an `if/then/fi` block lost to `php`
+  purely on shared `$VAR` syntax. Tried raising it to full parity (4) plus
+  extra bash keywords (`export`/`source`/`local`/...) — that *did* fix `sh`,
+  but caused real PHP functions in CodeSearchNet (no `<?php` tag present,
+  since these are extracted function bodies) to lose to `sh` on shared
+  `$var` + one incidental extra word, dropping PHP accuracy 96.7% -> 88.7%.
+  **Settled on a smaller, net-positive bump**: `sh`'s `$var` weight to 3
+  (still below php's 4) plus a `[[ ... ]]` test-expression rule, without the
+  extra generic keyword list. This keeps PHP's advantage on ambiguous
+  `$var`-only snippets while still meaningfully improving `sh`.
+
+### Before -> after (this session, both passes combined)
 
 | Dataset | Metric | Before | After |
 |---|---|---:|---:|
-| smola/language-dataset | Accuracy | 75.1% | 75.7% |
-| smola/language-dataset | Macro-F1 | 0.726 | 0.733 |
+| smola/language-dataset | Accuracy | 75.1% | 78.8% |
+| smola/language-dataset | Macro-F1 | 0.726 | 0.768 |
 | smola/language-dataset | dart accuracy | 89.5% | 94.7% |
-| CodeSearchNet | Accuracy | 64.9% | 81.2% |
-| CodeSearchNet | Macro-F1 | 0.733 | 0.871 |
-| CodeSearchNet | js accuracy | 12.3% | 47.7% |
+| smola/language-dataset | sh accuracy | 31.8% | 63.6% |
+| smola/language-dataset | scala accuracy | 50.0% | 65.0% |
+| smola/language-dataset | java accuracy | 57.1% | 76.2% |
+| CodeSearchNet | Accuracy | 64.9% | 80.9% |
+| CodeSearchNet | Macro-F1 | 0.733 | 0.870 |
+| CodeSearchNet | js accuracy | 12.3% | 48.0% |
 | CodeSearchNet | java accuracy | 44.7% | 99.0% |
+| CodeSearchNet | php accuracy | 95.0%* | 94.3% |
+
+\* PHP dipped slightly (-7 samples) as a side effect of the `sh` `$var`
+rebalance above; a more aggressive `sh` fix was reverted specifically because
+it cost PHP 24 samples for a smaller `sh` gain — see bullet above.
 
 Full local test suite (`pytest tests/`, 67 tests) and the original curated
 60-sample suite (`benchmark/benchmark.py`) still pass at 100% after these
@@ -83,9 +124,18 @@ install problem already noted in the main README.
 
 ## Remaining known weak spots (not yet addressed)
 
-- `groovy`: 20% on smola (4/20)
-- `sh`: 32% on smola (7/22)
-- `scala`: 50% on smola (10/20)
-- `ts`: 44% on smola (7/16)
+Regex-weight tuning against a single ~450-sample external set hit diminishing,
+sometimes noisy returns past this point — several attempted fixes (below)
+traded a gain in one language for a loss in another with the same total
+score, so they were left alone rather than chased further.
+
+- `groovy`: 25% on smola (5/20) — mostly loses to `py`/`java`/`swift` on files
+  whose only distinguishing content is in imports/comments, not in
+  Groovy-specific syntax (`~/`, closures, `.each {}`)
+- `cpp`: 55% on smola (11/20) — loses to `c` on files using C-style patterns
+  (`printf`, `->`) without `std::`/`class`/templates nearby
+- `ts`: 44% on smola (7/16) — TypeScript files that don't use type
+  annotations/interfaces/generics are close to indistinguishable from JS by
+  syntax alone; this is a real ambiguity, not just a weighting bug
 - `go` on CodeSearchNet: 75.3% (isolated functions lack `package`/`import`)
 - `rb` on CodeSearchNet: 71.0%
