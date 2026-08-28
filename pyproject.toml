@@ -13,9 +13,26 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "Apache-2.0" }
 
-keywords = ["language-detection", "code-analysis", "regex", "developer-tools", "lightweight"]
+keywords = [
+    "language-detection",
+    "language-identification",
+    "programming-language-detector",
+    "programming-language-detection",
+    "code-language-detector",
+    "code-analysis",
+    "code-classification",
+    "syntax-highlighting",
+    "source-code-analysis",
+    "regex",
+    "developer-tools",
+    "lightweight",
+    "pygments-alternative",
+    "guesslang-alternative",
+    "whatsthatcode-alternative",
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
@@ -27,6 +44,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Text Processing",
+    "Topic :: Text Processing :: Linguistic",
     "Typing :: Typed",
 ]
 
