@@ -164,6 +164,43 @@ just a benchmark artifact.
 Full methodology, per-language breakdowns, and the regex fixes this exposed
 are in [`benchmark/EXTERNAL_RESULTS.md`](benchmark/EXTERNAL_RESULTS.md).
 
+#### Where the ~20% goes: known failure modes
+
+We looked at every misclassification across both external datasets (96/453 on
+smola, 344/1800 on CodeSearchNet) to find the *general* patterns, not just
+weak individual languages. Four recurring causes explain most of it:
+
+1.  **Isolated snippets with no file-level context.** CodeSearchNet strips
+    each sample down to a single function body — no `import`, no `package`
+    declaration, no surrounding class. Those are exactly the signals most of
+    our rules rely on. This alone explains the single biggest failure
+    clusters we saw (e.g. `js` → `unknown` 62 times, `js` → `cs` 38 times, on
+    functions with nothing more distinctive than a `return` statement and a
+    brace).
+2.  **Keywords and operators that mean different things in different
+    languages.** `codelang-detect` scores tokens, not syntax trees, so a
+    shared token is a shared vote. Examples we found: Go's `func` keyword
+    also matches Swift's `func|struct|enum` rule, causing `go` → `swift`
+    49 times on CodeSearchNet; `String` is a real type name in both Ruby and
+    Rust; `package foo.bar` (no semicolon) is valid in Kotlin, Scala, *and*
+    Groovy; PHP and Shell both use `$var` for practically every variable.
+3.  **No comment or string-literal stripping.** Regexes run over the raw
+    source, including comments, docstrings, and license headers. A phrase
+    like "you may not use this file **except** in compliance with the
+    License" (standard Apache-2.0 boilerplate present in a huge fraction of
+    real repos) can trip a keyword rule meant for actual code. We fixed the
+    worst instance of this (Python's `except`/`finally`), but the general
+    class of bug — comments counting as evidence — is not eliminated.
+4.  **Genuinely ambiguous language pairs.** A TypeScript file that never uses
+    a type annotation, interface, or generic *is* valid, indistinguishable
+    JavaScript. No amount of regex tuning fixes this; it's not a detector
+    weakness so much as the languages themselves overlapping.
+
+None of this is unique to `codelang-detect` — any detector without a full
+parser for every supported language (Pygments and WhatsThatCode included)
+runs into the same four issues, which is part of why none of the three
+libraries clear ~80% on unfiltered, real-world data.
+
 ### Installation
 
 ```bash
