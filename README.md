@@ -15,7 +15,7 @@ Codelang-detect identifies the programming language of a given code snippet. It 
 
 ### Key Features
 
--   ⚡️ **Blazing Fast:** Built on a system of weighted, compiled regular expressions. Performance is measured in microseconds.
+-   ⚡️ **Fast on short snippets:** Built on a system of weighted, compiled regular expressions, measured in microseconds. On large files, cost scales with input size — see [External Benchmarks](#external-benchmarks-independent-datasets) for the honest picture.
 -   🎯 **Highly Accurate:** Demonstrably more accurate than popular alternatives — both on a curated suite of real-world and tricky code snippets, and on independent third-party datasets ([smola/language-dataset](https://github.com/smola/language-dataset), [CodeSearchNet](https://huggingface.co/datasets/code-search-net/code_search_net)) it was never tuned against.
 -   📦 **Zero Dependencies:** Pure Python. `pip install codelang-detect` is all you need. No heavyweight models, no external binaries.
 -   🔧 **Simple API:** A single function call: `detect(code)`.
@@ -138,14 +138,31 @@ tuned against, to see how the claim holds up outside the lab:
 \* WhatsThatCode's "election" algorithm is non-deterministic between runs.
 
 On real-world, independent data `codelang-detect` still beats both alternatives
-by a wide margin — 5x Pygments, 1.5–3.5x WhatsThatCode — while staying an order
-of magnitude faster than both on CodeSearchNet's short function-level samples.
-It does *not* score 100% here, though: isolated functions and files without
-strong idiomatic markers (e.g. a TypeScript file with no type annotations, or
-a Groovy file whose only distinguishing content is in imports) are genuinely
-ambiguous even to a human reader. Full methodology, per-language breakdowns,
-and the regex fixes this exposed are in
-[`benchmark/EXTERNAL_RESULTS.md`](benchmark/EXTERNAL_RESULTS.md).
+by a wide margin on **accuracy** — 5x Pygments, 1.5–3.5x WhatsThatCode. It does
+*not* score 100% here, though: isolated functions and files without strong
+idiomatic markers (e.g. a TypeScript file with no type annotations, or a
+Groovy file whose only distinguishing content is in imports) are genuinely
+ambiguous even to a human reader.
+
+**Speed is more mixed, and depends heavily on input size:**
+
+| Dataset | avg. sample size | `codelang-detect` (Ours) | Pygments | WhatsThatCode |
+| --- | :---: | :---: | :---: | :---: |
+| CodeSearchNet (short functions) | ~250 chars | **1,466 µs** | 9,656 µs | ~11,000 µs |
+| smola/language-dataset (full real files) | often several KB | 27,806 µs | **16,049 µs** | ~123,000 µs |
+
+On short snippets — like the curated 60-sample suite this project's headline
+numbers are based on — `codelang-detect` is 6-8x faster than Pygments. But on
+full-size real files, **Pygments is actually ~1.7x faster than us**; we still
+beat WhatsThatCode by ~7x either way. The reason: `codelang-detect` runs every
+regex against the entire raw input with no early exit, so cost scales with
+`rules × file length`. Pygments' tokenizer-based approach scales better on
+large files. If you're detecting the language of large files rather than
+short snippets, keep this in mind — it's a real, unresolved trade-off, not
+just a benchmark artifact.
+
+Full methodology, per-language breakdowns, and the regex fixes this exposed
+are in [`benchmark/EXTERNAL_RESULTS.md`](benchmark/EXTERNAL_RESULTS.md).
 
 ### Installation
 
