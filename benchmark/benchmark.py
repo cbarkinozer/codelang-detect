@@ -72,7 +72,7 @@ LANG_ALIAS_MAP = {
     'python3': 'py',
     'r': 'r',
     'ruby': 'rb',
-    'rust': 'rust',
+    'rust': 'rs',
     'scala': 'scala',
     'shell': 'sh',
     'sol': 'sol',
